@@ -16,31 +16,43 @@ while (have_posts()) {
     <?php
         // Render breadcrumb box IF page is a child page
         $parent_Id = wp_get_post_parent_id(get_the_ID());
-        if ($parent_Id) { ?>
+        if ($parent_Id): ?>
             <div class="metabox metabox--position-up metabox--with-home-link">
                 <p>
                     <a class="metabox__blog-home-link" href="<?= get_the_permalink($parent_Id) ?>"><i class="fa fa-home" aria-hidden="true"></i> Back to <?= get_the_title($parent_Id); ?></a> <span class="metabox__main"><?php the_title(); ?></span>
                 </p>
             </div>
-        <?php }
-    ?>
-    
-    <?php
-        // Render child links sidebar IF page is a parent of 1 or more child pages
-        // TODO remove this code and follow the video. (lesson 19 - Section 5)
-        // I got the objective wrong. it wasn't to render on parent pages only. it was
-        // to render on parent OR child pages only. big difference between that and what i did here.
-        $child_pages = get_children(array('post_parent' => get_the_ID())); 
-        if (count($child_pages)): ?>
-            <div class="page-links">
-                <h2 class="page-links__title"><a href="<?= get_the_permalink(); ?>"><?php the_title(); ?></a></h2>
-                <ul class="min-list">
-                    <?php foreach ($child_pages as $child): ?>
-                    <!-- <li class="current_page_item"><a href="#">Our History</a></li> -->
-                    <li><a href="<?= get_permalink($child->ID); ?>"><?= $child->post_title; ?></a></li>
-                    <?php endforeach; ?> 
-                </ul>
-            </div>
+        <?php endif; ?>
+
+        <?php 
+        $test_array = get_pages(array(
+            'child_of' => get_the_ID()
+        ));
+        // the commented out code below is another way to check if the page is a parent (the second condition of the below if statement). 
+        // this is based on my work i had done to render content if and only if a page is a parent:
+        // $child_pages = get_children(array('post_parent' => get_the_ID())); 
+
+        if ($parent_Id or $test_array): ?>
+        <div class="page-links">
+            <h2 class="page-links__title"><a href="<?= get_the_permalink($parent_Id); ?>"><?= get_the_title($parent_Id); // this works because the function will return the current page's title if the argument is 0 (integer)?></a></h2>
+            <ul class="min-list">
+                <?php
+                    if ($parent_Id) {
+                        $find_children_of = $parent_Id;
+                    } else {
+                        $find_children_of = get_the_ID();
+                    }
+                    wp_list_pages(array(
+                        'title_li' => NULL, // remove the "Pages" title that renders by default
+                        'child_of' => $find_children_of, // the if else blocks above handle the logic to say 
+                        //"if the current page has a parent, render the parent in the blue box and then render 
+                        //the children (including the current page) below it, and if the current page IS the parent, 
+                        //then render the current page in the blue box and render its children below it.
+                        'sort_column' => 'menu_order' //this tells wordpress to use the order of subpages (set manually in the page admin) to determine the list order
+                    ));
+                ?>
+            </ul>
+        </div>
         <?php endif; ?>
     
     <div class="generic-content">
