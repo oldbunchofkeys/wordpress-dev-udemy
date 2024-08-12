@@ -41,29 +41,26 @@
       <div class="full-width-split__two">
         <div class="full-width-split__inner">
           <h2 class="headline headline--small-plus t-center">From Our Blogs</h2>
-
+          <?php
+          $homepage_posts = new WP_Query(array(
+            'posts_per_page' => 2
+          ));
+          
+          while($homepage_posts->have_posts()): $homepage_posts->the_post(); ?>
           <div class="event-summary">
             <a class="event-summary__date event-summary__date--beige t-center" href="#">
-              <span class="event-summary__month">Jan</span>
-              <span class="event-summary__day">20</span>
+              <span class="event-summary__month"><?= get_the_time('M'); ?></span>
+              <span class="event-summary__day"><?= get_the_time('d'); ?></span>
             </a>
             <div class="event-summary__content">
-              <h5 class="event-summary__title headline headline--tiny"><a href="#">We Were Voted Best School</a></h5>
-              <p>For the 100th year in a row we are voted #1. <a href="#" class="nu gray">Read more</a></p>
+              <h5 class="event-summary__title headline headline--tiny"><a href="<?= get_the_permalink(); ?>"><?= get_the_title(); ?></a></h5>
+              <p><?= wp_trim_words(get_the_content(), 18) ?> <a href="<?= get_the_permalink(); ?>" class="nu gray">Read more</a></p>
             </div>
           </div>
-          <div class="event-summary">
-            <a class="event-summary__date event-summary__date--beige t-center" href="#">
-              <span class="event-summary__month">Feb</span>
-              <span class="event-summary__day">04</span>
-            </a>
-            <div class="event-summary__content">
-              <h5 class="event-summary__title headline headline--tiny"><a href="#">Professors in the National Spotlight</a></h5>
-              <p>Two of our professors have been in national news lately. <a href="#" class="nu gray">Read more</a></p>
-            </div>
-          </div>
-
-          <p class="t-center no-margin"><a href="#" class="btn btn--yellow">View All Blog Posts</a></p>
+          <?php endwhile; 
+          wp_reset_postdata();
+          ?>
+          <p class="t-center no-margin"><a href="<?= site_url('/blog') ?>" class="btn btn--yellow">View All Blog Posts</a></p>
         </div>
       </div>
     </div>
